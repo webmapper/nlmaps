@@ -32,9 +32,10 @@
   "author": "Hans Fast <hans@webmapper.net>",
   "license": "MIT",
   "dependencies": {
-    "nlmaps-googlemaps": "^2.2.7",
-    "nlmaps-leaflet": "^2.3.1",
-    "nlmaps-openlayers": "^2.2.7",
+    "emitonoff": "^0.1.1",
+    "nlmaps-googlemaps": "^2.1.0",
+    "nlmaps-leaflet": "^2.1.0",
+    "nlmaps-openlayers": "^2.1.1",
     "rollup-plugin-uglify-es": "0.0.1"
   },
   "devDependencies": {
