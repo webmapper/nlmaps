@@ -331,8 +331,7 @@ nlmaps.geoLocate = function(map, useropts = {}){
 
 nlmaps.clickprovider = function(map) {
   return {
-    subscribe: return {
-      function (callback) {
+    subscribe: function (callback) {
       map.on('click', (e) => {
         callback(e.latlng)
       })
