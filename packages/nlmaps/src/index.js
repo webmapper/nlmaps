@@ -1,4 +1,4 @@
-//import emitonoff from 'emitonoff';
+import emitonoff from 'emitonoff';
 import { bgLayer as bgL,
          overlayLayer as overlayL,
          markerLayer as markerL,
@@ -331,7 +331,8 @@ nlmaps.geoLocate = function(map, useropts = {}){
 
 nlmaps.clickprovider = function(map) {
   return {
-    subscribe: function (callback) {
+    subscribe: return {
+      function (callback) {
       map.on('click', (e) => {
         callback(e.latlng)
       })
