@@ -1,3 +1,4 @@
+import share from '../nlmaps/node_modules/callbag-share';
 import { CONFIG } from './configParser.js';
 function query(url) {
   const promise = new Promise((resolve, reject) => {
@@ -18,7 +19,8 @@ function query(url) {
 // }
 // user-supplied responseFormatter is used to create queryResult.
 const pointToQuery = (url, requestFormatter, responseFormatter) => inputSource => {
-  return function outputSource (start, outputSink) {
+  
+  function outputSource (start, outputSink) {
     if (start !== 0 ) return;
     inputSource(0, (t, d) => {
       if (t === 1) {
@@ -35,12 +37,19 @@ const pointToQuery = (url, requestFormatter, responseFormatter) => inputSource =
       }  
     })
   }
+  return share(outputSource)
 }
 
 //constructor to create a 'clickpricker' in one go.
 const queryFeatures = function(source, requestFormatter, responseFormatter) {
   let URL = CONFIG.FEATUREQUERYBASEURL;
   const querier =  pointToQuery(URL, requestFormatter, responseFormatter)(source);
+  //const subscribers = [];
+  //const multiPlex = function() {
+  //  subscribers.forEach(callback) {
+  //    callback(d)
+  //  }
+  //}
   querier.subscribe = function(callback) {
     querier(0, callback)
   }

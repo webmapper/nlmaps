@@ -32,6 +32,7 @@
   "author": "Hans Fast <hans@webmapper.net>",
   "license": "MIT",
   "dependencies": {
+    "callbag-share": "^1.0.0",
     "nlmaps-googlemaps": "^2.3.10",
     "nlmaps-leaflet": "^2.3.10",
     "nlmaps-openlayers": "^2.3.10",

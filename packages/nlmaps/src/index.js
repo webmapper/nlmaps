@@ -1,4 +1,4 @@
-
+import share from 'callbag-share';
 import { bgLayer as bgL,
          overlayLayer as overlayL,
          markerLayer as markerL,
@@ -325,8 +325,8 @@ nlmaps.geoLocate = function(map, useropts = {}){
   addGeoLocControlToMap(nlmaps.lib, geolocator, map);
 }
 
-nlmaps.clickprovider = function(map) {
-  const clickSource = function (start, sink) {
+nlmaps.clickprovider = function (map) {
+  const rawClickSource = function (start, sink) {
     if (start !== 0) return;
     map.on('click', function(e) {
       sink(1, e)
@@ -336,11 +336,13 @@ nlmaps.clickprovider = function(map) {
       };
     sink(0, talkback);
   };
+  const clickSource = share(rawClickSource);
   clickSource.subscribe = function (callback) {
-    clickSource(0, callback) 
+    clickSource(0, callback);
   }
   return clickSource;
 }
+
 
 nlmaps.queryFeatures = queryFeatures;
 nlmaps.singleMarker = singleMarker;
