@@ -31,7 +31,7 @@ import { bgLayer as bgGM,
 import {CONFIG} from '../../lib/configParser.js';
 import geoLocator from '../../nlmaps-geolocator/src/index.js';
 
-import { mapPointerStyle } from '../../lib/index.js';
+import { mapPointerStyle, testWhichLib, createMarkerLayer} from '../../lib/index.js';
 import { queryFeatures }  from '../../lib/featurequery.js';
 import {singleMarker, markerStore } from '../../lib/markers.js';
 
@@ -65,25 +65,6 @@ let nlmaps = {
 const geoLocateDefaultOpts = {
 }
 
-function testWhichLib() {
-  let defined = [];
-  if (typeof L === 'object') {
-    defined.push('leaflet');
-  }
-  if (typeof google === 'object' && typeof google.maps === 'object'){
-    defined.push('googlemaps');
-  }
-  if (typeof ol === 'object') {
-    defined.push('openlayers');
-  }
-  if( defined.length > 1 ) {
-    return 'too many libs';
-  } else if ( defined.length === 0 ) {
-    return 'too few libs';
-  } else {
-    return defined[0];
-  }
-}
 
 function initMap(lib, opts){
   let map, rootdiv,el, options;
@@ -231,21 +212,6 @@ function createOverlayLayer(lib, map, name) {
   return overlayLayer;
 }
 
-function createMarkerLayer(lib, map, latLngObject) {
-  let markerLayer;
-  switch (lib) {
-    case 'leaflet':
-      markerLayer = nlmaps.leaflet.markerLayer(latLngObject);
-      break;
-    case 'googlemaps':
-      markerLayer = nlmaps.googlemaps.markerLayer(latLngObject);
-      break;
-    case 'openlayers':
-      markerLayer = nlmaps.openlayers.markerLayer(latLngObject);
-      break;
-  }
-  return markerLayer;
-}
 
 function getMapCenter(lib, map) {
   let mapCenter;

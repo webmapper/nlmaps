@@ -1,4 +1,4 @@
-import { getMarker, mapPointerStyle } from './index.js';
+import { getMarker, testWhichLib, createMarkerLayer, mapPointerStyle } from './index.js';
 
 let markerStore = {
   removeMarker: function () {
@@ -7,6 +7,8 @@ let markerStore = {
   }
 };
 
+let lib = testWhichLib();
+
 function singleMarker(map, popupCreator) {
   mapPointerStyle(map);
   return (t, d) => {
@@ -14,14 +16,7 @@ function singleMarker(map, popupCreator) {
       if (markerStore.marker) {
         markerStore.marker.remove();
       }
-      let newmarker = L.marker([d.latlng.lat,d.latlng.lng], {
-        alt: 'marker',
-        icon: new L.icon({
-          iconUrl: getMarker().url,
-          iconSize: getMarker().iconSize,
-          iconAnchor: getMarker().iconAnchor
-        })
-      });
+      let newmarker = createMarkerLayer(lib, map, {latitude: d.latlng.lat, longitude: d.latlng.lng})
       markerStore.marker = newmarker;
       markerStore.marker.addTo(map);
       if (popupCreator) {

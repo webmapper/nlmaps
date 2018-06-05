@@ -61,6 +61,41 @@ function mapPointerStyle(map){
   classList.add('nlmaps-marker-cursor');
 }
 
+function createMarkerLayer(lib, map, latLngObject) {
+  let markerLayer;
+  switch (lib) {
+    case 'leaflet':
+      markerLayer = nlmaps.leaflet.markerLayer(latLngObject);
+      break;
+    case 'googlemaps':
+      markerLayer = nlmaps.googlemaps.markerLayer(latLngObject);
+      break;
+    case 'openlayers':
+      markerLayer = nlmaps.openlayers.markerLayer(latLngObject);
+      break;
+  }
+  return markerLayer;
+}
+function testWhichLib() {
+  let defined = [];
+  if (typeof L === 'object') {
+    defined.push('leaflet');
+  }
+  if (typeof google === 'object' && typeof google.maps === 'object'){
+    defined.push('googlemaps');
+  }
+  if (typeof ol === 'object') {
+    defined.push('openlayers');
+  }
+  if( defined.length > 1 ) {
+    return 'too many libs';
+  } else if ( defined.length === 0 ) {
+    return 'too few libs';
+  } else {
+    return defined[0];
+  }
+}
+
 //use named export instead of default because we might want
 //more exports from 'lib' in the future
-export { getProvider, getWmsProvider, geocoder, getMarker, mapPointerStyle};
+export { getProvider, getWmsProvider, testWhichLib, geocoder, createMarkerLayer, getMarker, mapPointerStyle};
