@@ -46,10 +46,11 @@ function main() {
   //and capture/log output
   tasks.forEach(task => {
     console.log(rollup_args);
+    rollup_args.unshift('../../node_modules/rollup/bin/rollup');
 
     console.log(process.cwd());
     execSync('which node', {stdio: [0,1,2]});
-    const build = spawn('../../node_modules/rollup/bin/rollup', rollup_args, {cwd: 'packages/' + helpers.packagePath(task)});
+    const build = spawn('node', rollup_args, {cwd: 'packages/' + helpers.packagePath(task)});
 
     build.stdout.on('data', (data) => {
       console.log(`${data}`);
