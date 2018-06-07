@@ -1,7 +1,7 @@
 const shell = require('shelljs');
 const conf = require('./conf.json');
 const helpers = require('./helpers');
-const { spawn } = require('child_process')
+const { spawn, execSync } = require('child_process')
 const chokidar = require('chokidar');
 
 const tasks = helpers.tasks();
@@ -47,7 +47,8 @@ function main() {
   tasks.forEach(task => {
     console.log(rollup_args);
 
-    console.log(process.cwd())
+    console.log(process.cwd());
+    execSync('which node', {stdio: [0,1,2]});
     const build = spawn('../../node_modules/rollup/bin/rollup', rollup_args, {cwd: 'packages/' + helpers.packagePath(task)});
 
     build.stdout.on('data', (data) => {
