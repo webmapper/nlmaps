@@ -82,7 +82,7 @@ Finally, you will need the `nlmaps` library itself, which you can download from 
     <script src="url_of_nlmaps.iife.js"></script>
 
 ### NodeJS
-`nlmaps` has been developed against NodeJS version 6.x.
+`nlmaps` has been developed against NodeJS version 8.x.
 
     npm install -S nlmaps
     
