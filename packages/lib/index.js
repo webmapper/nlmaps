@@ -65,6 +65,20 @@ function mapPointerStyle(map){
   classList.add('nlmaps-marker-cursor');
 }
 
+function addListener(ev, fn, lib, map) {
+  switch (lib) {
+    case 'leaflet':
+      map.on(ev, fn);
+      break;
+    case 'googlemaps':
+      map.addListener(ev, fn)
+      break;
+    case 'openlayers':
+      break;
+  }
+}
+
+
 //use named export instead of default because we might want
 //more exports from 'lib' in the future
-export { getProvider, getWmsProvider, geocoder, getMarker, getExtent, mapPointerStyle};
+export { getProvider, getWmsProvider, geocoder, getMarker, getExtent, mapPointerStyle, addListener};

@@ -1,4 +1,4 @@
-import { getProvider, getWmsProvider, geocoder, getMarker } from '../../lib/index.js';
+import { getProvider, getWmsProvider, getExtent, geocoder, getMarker } from '../../lib/index.js';
 
 function AttributionControl(controlDiv, attrControlText) {
   if (typeof google === 'object' && typeof google.maps === 'object') {
@@ -23,6 +23,14 @@ function AttributionControl(controlDiv, attrControlText) {
     const error = 'google is not defined';
     throw error;
   }
+}
+
+function extentGoogleFormat() {
+  let extent = getExtent();
+  return new google.maps.LatLngBounds(
+        new google.maps.LatLng(extent[0], extent[1]), 
+        new google.maps.LatLng(extent[2], extent[3])
+      );
 }
 
 function geoLocatorControl (geolocator, map){
@@ -80,7 +88,15 @@ function makeGoogleAttrControl(map=map, attr){
 function makeGoogleLayerOpts(provider){
   return {
     getTileUrl: function (coord, zoom) {
-      let url = `${provider.bare_url}/${zoom}/${coord.x}/${coord.y}.png`;
+      let url = provider.url.replace(/{[zxy]}/g, x => {
+        if (x[1] === 'x') {
+          return coord.x;
+        } else if (x[1] === 'y') {
+          return coord.y;
+        } else if (x[1] === 'z') {
+          return zoom;
+        }
+      });
       return url;
     },
     tileSize: new google.maps.Size(256, 256),
@@ -207,7 +223,7 @@ function getMapCenter(map) {
 }
 
 function geocoderControl(map) {
-  const control = geocoder.createControl(zoomTo, map);
+  const control = geocoder.createControl(zoomTo, map, nlmaps);
   map.getDiv().appendChild(control);
 }
 
@@ -235,4 +251,4 @@ function geocoderControl(map) {
 
 // geocoderControl(map);
 
-export { bgLayer, overlayLayer, markerLayer, getMapCenter, geoLocatorControl, geocoderControl };
+export { bgLayer, overlayLayer, markerLayer, getMapCenter, extentGoogleFormat, geoLocatorControl, geocoderControl };

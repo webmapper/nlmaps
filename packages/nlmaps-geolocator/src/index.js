@@ -13,6 +13,7 @@ function positionErrorHandler(error) {
 
 }
 
+
 const GeoLocator = function (opts) {
   const state = Object.assign({}, geoLocateDefaultOpts, opts);
 

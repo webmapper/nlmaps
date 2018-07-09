@@ -88,7 +88,7 @@ export default {
         },
         "zoom": 8,
         "attribution": true,
-        "extent": [-180,-90,180,90],
+        "extent": [49.83,0.831,53.904,19.75],
         "zoomposition": "topright"
     },
     "marker": {

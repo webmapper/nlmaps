@@ -18,6 +18,7 @@ import { bgLayer as bgGM,
          overlayLayer as overlayGM,
          markerLayer as markerGM,
          getMapCenter as centerGM,
+         extentGoogleFormat,
          geocoderControl as geocoderGM,
          geoLocatorControl as glG } from '../../nlmaps-googlemaps';
 
@@ -32,7 +33,7 @@ import { bgLayer as bgGM,
 import {CONFIG} from '../../lib/configParser.js';
 import geoLocator from '../../nlmaps-geolocator/src/index.js';
 
-import { mapPointerStyle } from '../../lib/index.js';
+import { mapPointerStyle, addListener } from '../../lib/index.js';
 import { queryFeatures }  from '../../lib/featurequery.js';
 import {singleMarker, multiMarker, markerStore } from '../../lib/markers.js';
 
@@ -88,22 +89,27 @@ function testWhichLib() {
   }
 }
 
+function createInnerMapDiv(opts){
+  let rootdiv = document.getElementById(opts.target);
+  rootdiv.style.position='relative';
+  rootdiv.style.padding='0px';
+  rootdiv.style.margin='0px';
+  let el = document.createElement('div');
+  el.style.height='100%';
+  rootdiv.appendChild(el);
+  return el;
+}
+
 function initMap(lib, opts){
-  let map, rootdiv,el, options;
+  let map, options;
+  let el = createInnerMapDiv(opts);
   switch (lib) {
     case 'leaflet':
       //work-around to prevent mapdragging at text selection
-      rootdiv = document.getElementById(opts.target);
-      rootdiv.style.position='relative';
-      rootdiv.style.padding='0px';
-      rootdiv.style.margin='0px';
       options = {};
       if(!opts.attribution) {
         options.attributionControl = false;
       }
-      el = L.DomUtil.create('div');
-      el.style.height='100%';
-      rootdiv.appendChild(el);
       options.maxBounds = extentLeafletFormat();
       map = L.map(el,options).setView([opts.center.latitude, opts.center.longitude], opts.zoom);
       if (opts.attribution) {
@@ -112,7 +118,7 @@ function initMap(lib, opts){
       map.zoomControl.setPosition(CONFIG.MAP.zoomposition);
       break;
     case 'googlemaps':
-      map = new google.maps.Map(document.getElementById(opts.target), {
+      map = new google.maps.Map(el, {
         center: {lat: opts.center.latitude, lng: opts.center.longitude},
         zoom: opts.zoom,
         zoomControl: true,
@@ -121,14 +127,43 @@ function initMap(lib, opts){
         },
         fullscreenControl: false
       });
+      let maxBounds = extentGoogleFormat();
+      google.maps.event.addListener(map, 'dragend', function() {
+        if (maxBounds.contains(map.getCenter())) return;
+
+        // We're out of bounds - Move the map back within the bounds
+        var c = map.getCenter(),
+          x = c.lng(),
+          y = c.lat(),
+          maxX = maxBounds.getNorthEast().lng(),
+          maxY = maxBounds.getNorthEast().lat(),
+          minX = maxBounds.getSouthWest().lng(),
+          minY = maxBounds.getSouthWest().lat();
+
+        if (x < minX) x = minX;
+        if (x > maxX) x = maxX;
+        if (y < minY) y = minY;
+        if (y > maxY) y = maxY;
+
+        map.setCenter(new google.maps.LatLng(y, x));
+      });
 
       break;
     case 'openlayers':
-      map = new ol.Map({
-        view: new ol.View({
+      let viewopts = {
           center: ol.proj.fromLonLat([opts.center.longitude, opts.center.latitude]),
           zoom: opts.zoom
-        }),
+      }
+
+      if (opts.extent) {
+        let proj1 = ol.proj.fromLonLat([opts.extent[1], opts.extent[0]]);
+        let proj2 = ol.proj.fromLonLat([opts.extent[3], opts.extent[2]]); 
+        let proj3 = proj1.concat(proj2);
+        viewopts.extent = proj3;
+      }
+
+      map = new ol.Map({
+        view: new ol.View(viewopts),
         target: el
       });
       map.getTargetElement().getElementsByClassName('ol-zoom')[0].style.cssText = "left: 5px !important; bottom: 5px !important"
@@ -308,7 +343,7 @@ nlmaps.createMap = function(useropts = {}) {
     }
     let marker = createMarkerLayer(nlmaps.lib, map, markerLocation);
 
-    markerStore.addMarker(marker, true);
+    markerStore.addMarker(marker, true, map);
     addLayerToMap(nlmaps.lib, marker, map);
   }
 
@@ -319,9 +354,9 @@ nlmaps.createMap = function(useropts = {}) {
   }
   //add click event passing through L click event
   if ( map !== undefined ) {
-    map.on('click', function(e) {
-      nlmaps.emit('mapclick', e);
-    })
+    addListener('click', function(e) {
+      nlmaps.emit('mapclick', e)
+    }, nlmaps.lib, map)
   }
   return map;
 };

@@ -1,5 +1,31 @@
 import { getMarker, mapPointerStyle } from './index.js';
 
+function addMarkerCloseOnClick(marker, map, lib){
+  switch (lib) {
+    case 'leaflet':
+      marker.on('click', function() {
+        markerStore.removeMarker(marker);
+      });
+      break;
+    case 'googlemaps':
+      marker.addListener('click', function() {
+        marker.setMap(null);
+        marker = null;
+      });
+      break;
+    case 'openlayers':
+      marker.id = 'marker';
+      map.on('click', function(e) {
+        map.forEachFeatureAtPixel(e.pixel, f => {
+          if ( marker.getSource().getFeatures()[0] === f) {
+            map.removeLayer(marker);
+          }
+        
+        });
+      });
+
+  }
+}
 
 let markerStore = {
   markers: [],
@@ -8,12 +34,10 @@ let markerStore = {
     markerStore.markers[idx].remove();
     markerStore.markers.splice(idx, 1);
   },
-  addMarker: function(marker, remove=false) {
+  addMarker: function(marker, remove=false, map) {
     markerStore.markers.push(marker);
     if (remove) {
-        marker.on('click', function() {
-         markerStore.removeMarker(marker);
-        })
+        addMarkerCloseOnClick(marker, map, nlmaps.lib)
     }
   }
 };
@@ -33,9 +57,9 @@ function createAndAddMarker(map, d, popupCreator) {
         let popup = L.popup({offset: [0,-50]})
             .setContent(div)
         newmarker.bindPopup(popup).openPopup();
-        markerStore.addMarker(newmarker);
+        markerStore.addMarker(newmarker, false, map);
     } else {
-        markerStore.addMarker(newmarker, true);
+        markerStore.addMarker(newmarker, true, map);
     }
 }
 

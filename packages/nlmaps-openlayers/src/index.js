@@ -24,13 +24,15 @@ function bgLayer(name='standaard') {
   }
 }
 function markerLayer(latLngObject) {
+  const marker = getMarker();
+  const markerSrc = marker.url;
   let markerStyle = new ol.style.Style({
     image: new ol.style.Icon(
       ({
         anchor: [32, 63],
         anchorXUnits: 'pixels',
         anchorYUnits: 'pixels',
-        src: getMarker().url,
+        src: markerSrc,
         scale: 1
       })
     )
@@ -96,9 +98,11 @@ function geoLocatorControl(geolocator, map){
 
   function moveMap(d, map=map){
     let oldZoom = map.getView().getZoom();
+    let oldExtent = map.getView.getExtent();
     let view = new ol.View({
       center: ol.proj.fromLonLat([d.coords.longitude,d.coords.latitude]),
-      zoom: oldZoom
+      zoom: oldZoom,
+      extent: oldExtent
     });
     map.setView(view);
   }
@@ -123,7 +127,7 @@ function getMapCenter(map) {
 }
 
 function geocoderControl(map) {
-  let control = geocoder.createControl(zoomTo, map);
+  let control = geocoder.createControl(zoomTo, map, nlmaps);
   control = new ol.control.Control({element: control});
   map.addControl(control);
 }
