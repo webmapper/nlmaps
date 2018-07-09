@@ -2,18 +2,54 @@
 
 **Table of Contents**
 
-* [Purpose](#purpose)
-* [Usage example](#usage-example)
-* [Getting set up](#getting-set-up)
-* [API documentation](#api-documentation)
-* [Events](#events)
-* [Advanced usage](#advanced-usage)
-* [Raw tile URLs](#raw-tile-urls)
-* [Developing](#developing)
+<!-- toc -->
+
+- [Purpose](#purpose)
+- [Usage example](#usage-example)
+- [Getting set up](#getting-set-up)
+  * [Wizard](#wizard)
+  * [Manual browser configuration](#manual-browser-configuration)
+  * [NodeJS](#nodejs)
+- [API documentation](#api-documentation)
+  * [`nlmaps.createMap(options)`](#nlmapscreatemapoptions)
+  * [`nlmaps.geoLocate(map, options)`](#nlmapsgeolocatemap-options)
+  * [`nlmaps..bgLayer([style]) | nlmaps.googlemaps.bgLayer(map, [style])`](#nlmapsbglayerstyle--nlmapsgooglemapsbglayermap-style)
+  * [`nlmaps..markerLayer([coords])`](#nlmapsmarkerlayercoords)
+  * [`nlmaps..overlayLayer([overlay]) | nlmaps.googlemaps.overlayLayer(map, [overlay])`](#nlmapsoverlaylayeroverlay--nlmapsgooglemapsoverlaylayermap-overlay)
+  * [`nlmaps..overlayLayer([overlay],[endpoint]) | nlmaps.googlemaps.overlayLayer(map, [overlay], [endpoint])`](#nlmapsoverlaylayeroverlayendpoint--nlmapsgooglemapsoverlaylayermap-overlay-endpoint)
+  * [`nlmaps..geoLocatorControl(geolocator) | nlmaps.googlemaps.geoLocatorControl(geolocator, map)`](#nlmapsgeolocatorcontrolgeolocator--nlmapsgooglemapsgeolocatorcontrolgeolocator-map)
+  * [`nlmaps.clickProvider(map)`](#nlmapsclickprovidermap)
+  * [`nlmaps.queryFeatures(clickProvider, baseUrl, requestFormatter, responseFormatter)`](#nlmapsqueryfeaturesclickprovider-baseurl-requestformatter-responseformatter)
+  * [`nlmaps.singleMarker(map, popupCreator)`](#nlmapssinglemarkermap-popupcreator)
+- [Events](#events)
+- [Advanced usage](#advanced-usage)
+  * [Leaflet](#leaflet)
+  * [OpenLayers](#openlayers)
+  * [Google Maps](#google-maps)
+  * [Include only your library-specific functions](#include-only-your-library-specific-functions)
+  * [Removing or further manipulating the map or layer](#removing-or-further-manipulating-the-map-or-layer)
+  * [The geolocator and the geoLocatorControls](#the-geolocator-and-the-geolocatorcontrols)
+  * [Using a custom configuration file](#using-a-custom-configuration-file)
+- [Raw tile URLs](#raw-tile-urls)
+- [Developing](#developing)
+  * [Installation/set up](#installationset-up)
+  * [General development notes](#general-development-notes)
+  * [Publishing](#publishing)
+  * [Building the webpage](#building-the-webpage)
+
+<!-- tocstop -->
 
 ## Purpose
 
 The `nlmaps` JavaScript library allows you to create layers for Leaflet, Google Maps, Mapbox, or OpenLayers pre-configured to use the BRT-Achtergrondkaart layers. You don't need to figure out the tile URLs yourself. To make it even easier, it automatically detects the map library you're using and creates a map pre-loaded with one of the BRT-Achtergrondkaart layers.
+
+NL Maps is built to be configurable for your custom use case. By default, NL Maps is built with the configuration file at `packages/config/config.js`. You can supply your own configuration file when building NL Maps to specify:
+
+* which baselayers and overlays users can add
+* the default position, zoom and bounds
+* css classes to map to NL Maps objects for custom styling
+
+For more information on configuration, see [here](#using-a-custom-configuration-file).
 
 ## Usage example
 
@@ -59,6 +95,7 @@ Finally, you will need the `nlmaps` library itself, which you can download from 
 Leaflet, Google Maps, Mapbox, or OpenLayers will also need to be available in your final web browser scope. One way you can do this is to install a package that wraps your map library for Node; in that case `npm install -S` it (for example, [leaflet](https://www.npmjs.com/package/leaflet), [google-maps](https://www.npmjs.com/package/google-maps) or [openlayers](https://www.npmjs.com/package/openlayers)). You can also include it as a script in the HTML-file that loads your final app output.
 
 **Note on using Mapbox:** if you are using the Mapbox library, follow the instructions for Leaflet. Since Mapbox includes the Leaflet library it will work the same.
+
 
 ## API documentation
 
@@ -397,7 +434,15 @@ If you want to remove your map object or layer, you can just use the standard me
 
 ### The geolocator and the geoLocatorControls
 
-You can also use the `nlmaps-geolocator` package directly instead of calling it with `nlmaps.geoLocate`. This gives you flexibility to implement your own control. Each of the library-specific sub-packages provides a control which interfaces with the `nlmaps-geolocator` API, but these are quite simple controls with, at the moment, hard-coded CSS styling. In the future `nlmaps` may provide a CSS file but for now, if you want to modify the placement, you should provide your own CSS and/or create your own control.
+You can also use the `nlmaps-geolocator` package directly instead of calling it with `nlmaps.geoLocate`. This gives you flexibility to implement your own control. Each of the library-specific sub-packages provides a control which interfaces with the `nlmaps-geolocator` API, but these are quite simple controls. If you want to modify the placement, you should provide your own CSS and/or create your own control.
+
+### Using a custom configuration file
+
+To build NL Maps with a custom configuration file, use the option `-c | --config` for the build script:
+
+    node scripts/build.js -c path/to/myconfig.js
+
+See [`packages/config`](https://github.com/webmapper/nlmaps/tree/develop/packages/config) for configuration options.
 
 ## Raw tile URLs
 
@@ -423,7 +468,7 @@ To develop `nlmaps`, clone the repository and then in the directory run:
 `lerna bootstrap` symlinks cross-dependencies between the subpackages into each others' `node_modules` directory so that they can `require()` or `import` each other without having to actually download from npmjs.com
 
 ### General development notes
-There are some issues when trying to call rollup from npm scripts, so there is a set of scripts in `scripts/` that should be called directly. The usage is as follows (note that rollup needs to installed as global):
+There are some issues when trying to call rollup from npm scripts, so there is a set of scripts in `scripts/` that should be called directly. The usage is as follows:
 
 * `node scripts/build` to build the source from `packages/PACKAGE/src` into `packages/PACKAGE/build` 
 * `node scripts/test` to run tests in `packages/PACKAGE/test` -- runs `unit-test.js` with Node and copies/compiles browser test js and html to build.
@@ -451,6 +496,9 @@ You can use the wrapper `serve-dev` to run the whole development setup, but note
 
 **Also, NOTE:** the live server runs with basic SSL. You have to open the test pages with `https://` or they won't work. You will also need to add an exception for the self-signed security certificates the first time you open them.
 
+The Table of Contents in this file is generated with [`markdown-toc`](https://github.com/jonschlinkert/markdown-toc): `markdown-toc -i README.md`.
+
+
 ### Publishing
 
 [Lerna](https://lernajs.io/) is used for optimising the workflow around managing multi-package JavaScript projects with git and npm. Because of some seeming subtleties of Rollup's interaction with Lerna or NPM, there is a different build script. Use the following procedure to publish the packages.
@@ -464,6 +512,6 @@ You can use the wrapper `serve-dev` to run the whole development setup, but note
 This publishes to npm as well as creates new git tags for the releases, which are pushed to Github. To finish the release, go to the  Github repo's release page and annotate the latest release for the 'nlmaps' package (this makes it show up under the 'latest' path on Github).
 
 ### Building the webpage
-To build the webpage goto the docs folder and make sure you have gulp installed. 
+To build the webpage go to the docs folder and make sure you have gulp installed. 
 
 Run `gulp build` to start the build process. When the process is finished the compiled website and assets are available in the build folder.
