@@ -5,7 +5,9 @@
 <!-- toc -->
 
 - [Purpose](#purpose)
+  * [Configurability](#configurability)
 - [Usage example](#usage-example)
+- [Disclaimer](#disclaimer)
 - [Getting set up](#getting-set-up)
   * [Wizard](#wizard)
   * [Manual browser configuration](#manual-browser-configuration)
@@ -43,6 +45,9 @@
 
 The `nlmaps` JavaScript library allows you to create layers for Leaflet, Google Maps, Mapbox, or OpenLayers pre-configured to use the BRT-Achtergrondkaart layers. You don't need to figure out the tile URLs yourself. To make it even easier, it automatically detects the map library you're using and creates a map pre-loaded with one of the BRT-Achtergrondkaart layers.
 
+
+### Configurability
+
 NL Maps is built to be configurable for your custom use case. By default, NL Maps is built with the configuration file at `packages/config/config.js`. You can supply your own configuration file when building NL Maps to specify:
 
 * which baselayers and overlays users can add
@@ -61,6 +66,9 @@ Available map styles:
 * `pastel`: in pastel tints
 * `grijs`: in very low saturation
 * `luchtfoto`: aerial imagery
+
+## Disclaimer
+In your choice of software library be aware of associated terms of service and potential usage costs. NL Maps / Kadaster is not responsible for consequences of these conditions.
 
 ## Getting set up
 
