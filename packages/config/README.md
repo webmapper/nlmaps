@@ -1,6 +1,6 @@
 # nlmaps configuration
 
-**version**:  `float` version of the configuration format, currently `0.2`
+**version**:  `float` version of the configuration format, currently `0.3`
 
 **basemaps**: `object` default settings for basemaps & extra parameters for each base-layers
 
@@ -18,14 +18,13 @@
 * **attribution**: `html-string` attribution string to be shown on the map
 * **minZoom**: `integer` minimum zoomlevel for the base-layer
 * **maxZoom**: `integer` maximum zoomlevel for the base-layer
-* **type**: `string` type of the baselayer service. Currently only `wmts` (REST) and `tms` are supported
 * **format**: `string` format of the baselayer, eg `png`, `jpeg`
 * **url**: `string` default webservice url, can be overwritten with the `url` parameter in the `layers` object
 
 **layers**: `array` layer specific settings:
 * **name**: `string` computer friendly name
 * **layerName**: `string` name of the layer in the webservice
-* **url**: `string` base url of the service, a typical wmts service `https://host/service/layername/crs/{z}/{x}/{y}.png` would be split like this: `[url]/[type]/[layerName]/[crs]/z.x.y.[format]` and a tms service `https://host/layername/{z}/{x}/{y}.png` like this: `[url]/[layerName]/{z}/{x}/{y}.[format]`
+* **url**: `string` base url of the service, a typical service `https://host/layername/{z}/{x}/{y}.png`  would be split like this: `[url]/[layerName]/{z}/{x}/{y}.[format]`
 * **subdomains**: `string` Subdomains of the tile service. Can be passed in the form of one string where each letter is a subdomain name: `'abcd'` needs a placholder `{s}` in the url
 
 ## wms object
@@ -71,25 +70,24 @@ A collection of arrays with classnames to be added to interface elements. This c
 ## Example
 ```
  {
-    "version": 0.1,
+    "version": 0.3,
     "basemaps": {
         "defaults": {
             "crs": "EPSG:3857",
             "attr": "Kaartgegevens &copy; <a href='https://www.kadaster.nl'>Kadaster</a> | <a href='https://www.verbeterdekaart.nl'>Verbeter de kaart</a>",
             "minZoom": 6,
             "maxZoom": 19,
-            "type": "wmts",
             "format": "png",
-            "url": "https://geodata.nationaalgeoregister.nl/tiles/service"
+            "url": "https://geodata.nationaalgeoregister.nl/tiles/service/wmts"
         },
         "layers": [
             {
                 "name": "standaard",
-                "layerName": "brtachtergrondkaart"
+                "layerName": "brtachtergrondkaart/EPSG:3857"
             },{
                 "name": "luchtfoto",
-                "layerName": "2016_ortho25",
-                "url": "https://geodata.nationaalgeoregister.nl/luchtfoto/rgb",
+                "layerName": "2016_ortho25/EPSG:3857",
+                "url": "https://geodata.nationaalgeoregister.nl/luchtfoto/rgb/wmts",
                 "format": "jpeg"
             }
         ]
@@ -138,7 +136,7 @@ A collection of arrays with classnames to be added to interface elements. This c
         'geocoderResultList': ['nlmaps-geocoder-result-list'],
         'geocoderResultItem' : ['nlmaps-geocoder-result-item'],
         'geocoderResultSelected' : ['nlmaps-geocoder-result-selected']
-        
+
     }
 }
 ```
